@@ -45,6 +45,35 @@ def double_negation(text):
     return final
 
 
+def prenex_form(text):
+    final = text
+    i = 0
+    length = len(final)
+
+    while i < length:
+        if final[i] == '∀' or final[i] == '∃':
+            while i < length:
+                if (final[i] == '∃' or final[i] == '∀') and str.islower(final[i + 1]):
+                    i += 2
+                else:
+                    break
+            j = i
+            while j < length:
+                if final[j] == '∀' or final[j] == '∃':
+                    final = insert_letter(final, final[j], i)
+                    final = replace_letter(final, '', j + 1)
+                    j += 1
+                    i += 1
+                    final = insert_letter(final, final[j], i)
+                    final = replace_letter(final, '', j + 1)
+                    i += 1
+                j += 1
+            if j >= length:
+                break
+        i += 1
+    return final
+
+
 def de_morgan(text):
     final = text
     i = 0
@@ -79,5 +108,19 @@ def de_morgan(text):
     return final
 
 
-test = "∀x∃y∃z¬(¬((¬P(y)) ∨ (Q(z))) ∨ ((¬P(x)) ∨ (Q(x))))"
-print(de_morgan(test))
+def elimination_universal(text):
+    final = text
+    i = 0
+    length = len(final)
+
+    while i < length:
+        if final[i] == '∀' and str.islower(final[i + 1]):
+            final = replace_letter(final, '', i)
+            final = replace_letter(final, '', i)
+        i += 1
+        length = len(final)
+    return final
+
+
+test = "∀y((∃x Test(y, x)) ∧ Easy(y) ⇒ ∀z Pass(z, y))"
+print(elimination_universal(prenex_form(test)))
